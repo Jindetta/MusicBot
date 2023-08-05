@@ -19,7 +19,6 @@ import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jlyrics.Lyrics
 import com.jagrosh.jlyrics.LyricsClient
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.MusicCommand
 import net.dv8tion.jda.api.EmbedBuilder
@@ -41,14 +40,14 @@ class LyricsCmd(bot: Bot) : MusicCommand(bot) {
     }
 
     override fun runCommand(event: CommandEvent) {
-        val title: String
-        title = if (event.args.isEmpty()) {
-            val sendingHandler = event.audioHandler()
-            if (sendingHandler!!.isMusicPlaying(event.jda)) sendingHandler.player.playingTrack.info.title else {
+        val title: String = event.args.ifEmpty {
+            val handler = event.audioHandler()
+
+            if (handler.isMusicPlaying(event.jda)) handler.player.playingTrack.info.title else {
                 event.replyError("There must be music playing to use that!")
                 return
             }
-        } else event.args
+        }
         event.channel.sendTyping().queue()
         client.getLyrics(title).thenAccept { lyrics: Lyrics? ->
             if (lyrics == null) {

@@ -17,7 +17,6 @@ package com.jagrosh.jmusicbot.commands.dj
 
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.DJCommand
 
@@ -35,13 +34,13 @@ class PauseCmd(bot: Bot) : DJCommand(bot) {
 
     override fun runCommand(event: CommandEvent) {
         val handler = event.audioHandler()
-        if (handler != null) {
-            if (handler.player.isPaused) {
-                event.replyWarning("The player is already paused! Use `" + event.client.prefix + "play` to unpause!")
-                return
-            }
-            handler.player.isPaused = true
-            event.replySuccess("Paused **" + handler.player.playingTrack.info.title + "**. Type `" + event.client.prefix + "play` to unpause!")
+
+        if (handler.player.isPaused) {
+            event.replyWarning("The player is already paused! Use `${event.client.prefix}play` to unpause!")
+            return
         }
+
+        handler.player.isPaused = true
+        event.replySuccess("Paused **${handler.player.playingTrack.info.title}**. Type `${event.client.prefix}play` to unpause!")
     }
 }

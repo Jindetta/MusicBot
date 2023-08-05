@@ -59,6 +59,5 @@ class RepeatCmd(bot: Bot) : DJCommand(bot) {
         event.replySuccess("Repeat mode is now `" + value.userFriendlyName + "`")
     }
 
-    override fun runCommand(event: CommandEvent) { /* Intentionally Empty */
-    }
+    override fun runCommand(event: CommandEvent) {}
 }

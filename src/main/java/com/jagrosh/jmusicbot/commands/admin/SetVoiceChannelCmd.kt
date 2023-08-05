@@ -26,30 +26,30 @@ import com.jagrosh.jmusicbot.utils.FormatUtil
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-class SetdjCmd(bot: Bot) : AdminCommand() {
+class SetVoiceChannelCmd(bot: Bot) : AdminCommand() {
     init {
-        name = "setdj"
-        help = "sets the DJ role for certain music commands"
-        arguments = "<rolename|NONE>"
+        name = "setvc"
+        help = "sets the voice channel for playing music"
+        arguments = "<channel|NONE>"
         aliases = bot.config.getAliases(name)
     }
 
     override fun execute(event: CommandEvent) {
         if (event.args.isEmpty()) {
-            event.reply(event.client.error + " Please include a role name or NONE")
+            event.reply(event.client.error + " Please include a voice channel or NONE")
             return
         }
         val s = event.client.getSettingsFor<Settings>(event.guild)
         if (event.args.equals("none", ignoreCase = true)) {
-            s.setDJRole(null)
-            event.reply(event.client.success + " DJ role cleared; Only Admins can use the DJ commands.")
+            s.setVoiceChannel(null)
+            event.reply(event.client.success + " Music can now be played in any channel")
         } else {
-            val list = FinderUtil.findRoles(event.args, event.guild)
-            if (list.isEmpty()) event.reply(event.client.warning + " No Roles found matching \"" + event.args + "\"") else if (list.size > 1) event.reply(
-                event.client.warning + FormatUtil.listOfRoles(list, event.args)
+            val list = FinderUtil.findVoiceChannels(event.args, event.guild)
+            if (list.isEmpty()) event.reply(event.client.warning + " No Voice Channels found matching \"" + event.args + "\"") else if (list.size > 1) event.reply(
+                event.client.warning + FormatUtil.listVoiceChannels(list, event.args)
             ) else {
-                s.setDJRole(list[0])
-                event.reply(event.client.success + " DJ commands can now be used by users with the **" + list[0].name + "** role.")
+                s.setVoiceChannel(list[0])
+                event.reply(event.client.success + " Music can now only be played in " + list[0].asMention)
             }
         }
     }

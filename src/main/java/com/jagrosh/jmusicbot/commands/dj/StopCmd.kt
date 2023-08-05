@@ -17,7 +17,6 @@ package com.jagrosh.jmusicbot.commands.dj
 
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.DJCommand
 
@@ -35,10 +34,9 @@ class StopCmd(bot: Bot) : DJCommand(bot) {
 
     override fun runCommand(event: CommandEvent) {
         val handler = event.audioHandler()
-        if (handler != null) {
-            handler.stopAndClear()
-            event.guild.audioManager.closeAudioConnection()
-            event.reply(event.client.success + " The player has stopped and the queue has been cleared.")
-        }
+
+        handler.stopAndClear()
+        event.guild.audioManager.closeAudioConnection()
+        event.reply("${event.client.success} The player has stopped and the queue has been cleared.")
     }
 }

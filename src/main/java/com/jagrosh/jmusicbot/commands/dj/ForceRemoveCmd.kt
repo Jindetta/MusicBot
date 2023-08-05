@@ -19,7 +19,6 @@ import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jdautilities.commons.utils.FinderUtil
 import com.jagrosh.jdautilities.menu.OrderedMenu
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.DJCommand
 import net.dv8tion.jda.api.Permission
@@ -48,7 +47,7 @@ class ForceRemoveCmd(bot: Bot) : DJCommand(bot) {
             return
         }
         val handler = event.audioHandler()
-        if (handler?.queue?.isEmpty == true) {
+        if (handler.queue.isEmpty) {
             event.replyError("There is nothing in the queue!")
             return
         }
@@ -84,7 +83,7 @@ class ForceRemoveCmd(bot: Bot) : DJCommand(bot) {
     }
 
     private fun removeAllEntries(target: User, event: CommandEvent) {
-        val count = (event.audioHandler())?.queue?.removeAll(target.idLong)
+        val count = (event.audioHandler()).queue.removeAll(target.idLong)
         if (count == 0) {
             event.replyWarning("**" + target.name + "** doesn't have any songs in the queue!")
         } else {

@@ -78,9 +78,9 @@ class PlaylistLoader(private val config: BotConfig) {
                 val shuffle = booleanArrayOf(false)
                 val list: MutableList<String> = ArrayList()
                 Files.readAllLines(OtherUtil.getPath(config.playlistsFolder + File.separator + name + ".txt"))
-                    .forEach(Consumer<String> { str: String ->
+                    .forEach { str: String ->
                         var s = str.trim { it <= ' ' }
-                        if (s.isEmpty()) return@Consumer
+                        if (s.isEmpty()) return@forEach
                         if (s.startsWith("#") || s.startsWith("//")) {
                             s = s.replace("\\s+".toRegex(), "")
                             if (s.equals("#shuffle", ignoreCase = true) || s.equals(
@@ -89,7 +89,7 @@ class PlaylistLoader(private val config: BotConfig) {
                                 )
                             ) shuffle[0] = true
                         } else list.add(s)
-                    })
+                    }
                 if (shuffle[0]) shuffle(list)
                 Playlist(name, list, shuffle[0])
             } else {
@@ -168,7 +168,7 @@ class PlaylistLoader(private val config: BotConfig) {
         }
 
         fun shuffleTracks() {
-            shuffle<AudioTrack>(tracks)
+            shuffle(tracks)
         }
     }
 

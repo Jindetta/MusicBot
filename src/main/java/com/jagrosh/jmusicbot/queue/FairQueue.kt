@@ -23,6 +23,7 @@ package com.jagrosh.jmusicbot.queue
 class FairQueue<T : Queueable> {
     private val list: MutableList<T> = ArrayList()
     private val set: MutableSet<Long> = HashSet()
+
     fun add(item: T): Int {
         var lastIndex: Int = list.lastIndex
         while (lastIndex > -1) {
@@ -41,7 +42,11 @@ class FairQueue<T : Queueable> {
     }
 
     fun addAt(index: Int, item: T) {
-        if (index >= list.size) list.add(item) else list.add(index, item)
+        if (index >= list.size) {
+            list.add(item)
+        } else {
+            list.add(index, item)
+        }
     }
 
     fun size(): Int {
@@ -55,10 +60,6 @@ class FairQueue<T : Queueable> {
     val isEmpty: Boolean
         get() = list.isEmpty()
 
-    fun getList(): List<T> {
-        return list
-    }
-
     operator fun get(index: Int): T {
         return list[index]
     }
@@ -69,12 +70,14 @@ class FairQueue<T : Queueable> {
 
     fun removeAll(identifier: Long): Int {
         var count = 0
-        for (i in list.indices.reversed()) {
-            if (list[i].identifier == identifier) {
-                list.removeAt(i)
+
+        for (item in list.reversed()) {
+            if (item.identifier == identifier) {
+                list.remove(item)
                 count++
             }
         }
+
         return count
     }
 
@@ -83,22 +86,23 @@ class FairQueue<T : Queueable> {
     }
 
     fun shuffle(identifier: Long): Int {
-        val iset: MutableList<Int> = ArrayList()
-        for (i in list.indices) {
-            if (list[i].identifier == identifier) iset.add(i)
-        }
-        for (j in iset.indices) {
-            val first = iset[j]
-            val second = iset[(Math.random() * iset.size).toInt()]
+        val modifiedList = list.filter { track -> track.identifier == identifier }
+
+        /*for (index in modifiedList.indices) {
+            val first = modifiedList[index]
+            val second = modifiedList[(Math.random() * iset.size).toInt()]
             val temp = list[first]
             list[first] = list[second]
             list[second] = temp
-        }
-        return iset.size
+        }*/
+
+        list.shuffle()
+
+        return list.size
     }
 
     fun skip(number: Int) {
-        for (i in 0 until number) list.removeFirst()
+        list.removeAll(list.take(number).toSet())
     }
 
     /**
@@ -109,6 +113,7 @@ class FairQueue<T : Queueable> {
      */
     fun moveItem(from: Int, to: Int): T {
         val item = list.removeAt(from)
+
         list.add(to, item)
         return item
     }

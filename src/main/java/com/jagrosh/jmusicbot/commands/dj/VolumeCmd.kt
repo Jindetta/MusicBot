@@ -17,7 +17,7 @@ package com.jagrosh.jmusicbot.commands.dj
 
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
+import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.DJCommand
 import com.jagrosh.jmusicbot.settings.Settings
 import com.jagrosh.jmusicbot.utils.FormatUtil
@@ -35,24 +35,21 @@ class VolumeCmd(bot: Bot) : DJCommand(bot) {
     }
 
     override fun runCommand(event: CommandEvent) {
-        val handler = event.guild.audioManager.sendingHandler as? AudioHandler
-        if (handler != null) {
-            val settings = event.client.getSettingsFor<Settings>(event.guild)
-            val volume = handler.player.volume
-            if (event.args.isEmpty()) {
-                event.reply(FormatUtil.volumeIcon(volume) + " Current volume is `" + volume + "`")
-            } else {
-                val nvolume: Int
-                nvolume = try {
-                    event.args.toInt()
-                } catch (e: NumberFormatException) {
-                    -1
-                }
-                if (nvolume < 0 || nvolume > 150) event.reply(event.client.error + " Volume must be a valid integer between 0 and 150!") else {
-                    handler.player.volume = nvolume
-                    settings.volume = nvolume
-                    event.reply(FormatUtil.volumeIcon(nvolume) + " Volume changed from `" + volume + "` to `" + nvolume + "`")
-                }
+        val handler = event.audioHandler()
+        val settings = event.client.getSettingsFor<Settings>(event.guild)
+        val volume = handler.player.volume
+        if (event.args.isEmpty()) {
+            event.reply(FormatUtil.volumeIcon(volume) + " Current volume is `" + volume + "`")
+        } else {
+            val nvolume: Int = try {
+                event.args.toInt()
+            } catch (e: NumberFormatException) {
+                -1
+            }
+            if (nvolume < 0 || nvolume > 150) event.reply(event.client.error + " Volume must be a valid integer between 0 and 150!") else {
+                handler.player.volume = nvolume
+                settings.volume = nvolume
+                event.reply(FormatUtil.volumeIcon(nvolume) + " Volume changed from `" + volume + "` to `" + nvolume + "`")
             }
         }
     }

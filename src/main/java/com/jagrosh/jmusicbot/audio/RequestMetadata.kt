@@ -30,7 +30,7 @@ class RequestMetadata(user: User?) {
     }
 
     val owner: Long
-        get() = user?.id ?: 0L
+        get() = user?.id ?: 0
 
     inner class RequestInfo(val query: String, val url: String)
     inner class UserInfo(val id: Long, val username: String, val discrim: String, val avatar: String)

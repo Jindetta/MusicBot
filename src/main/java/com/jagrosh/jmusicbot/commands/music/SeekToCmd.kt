@@ -1,8 +1,10 @@
 package com.jagrosh.jmusicbot.commands.music
 
 import com.jagrosh.jdautilities.command.CommandEvent
-import com.jagrosh.jmusicbot.*
+import com.jagrosh.jmusicbot.Bot
+import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.MusicCommand
+import com.jagrosh.jmusicbot.timeToLong
 
 /**
  *
@@ -13,7 +15,6 @@ class SeekToCmd(bot: Bot) : MusicCommand(bot) {
         name = "seek"
         help = "seeks to specified position"
         aliases = bot.config.getAliases(name)
-        beListening = true
         bePlaying = true
     }
 

@@ -21,6 +21,7 @@ import java.awt.event.WindowListener
 import javax.swing.JFrame
 import javax.swing.JTabbedPane
 import javax.swing.WindowConstants
+import kotlin.system.exitProcess
 
 /**
  *
@@ -46,7 +47,7 @@ class GUI(private val bot: Bot) : JFrame() {
                 try {
                     bot.shutdown()
                 } catch (ex: Exception) {
-                    System.exit(0)
+                    exitProcess(0)
                 }
             }
 

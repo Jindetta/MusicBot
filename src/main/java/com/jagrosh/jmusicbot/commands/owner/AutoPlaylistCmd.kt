@@ -24,7 +24,7 @@ import com.jagrosh.jmusicbot.settings.Settings
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-open class AutoplaylistCmd(private val bot: Bot) : OwnerCommand() {
+open class AutoPlaylistCmd(private val bot: Bot) : OwnerCommand() {
     init {
         guildOnly = true
         name = "autoplaylist"

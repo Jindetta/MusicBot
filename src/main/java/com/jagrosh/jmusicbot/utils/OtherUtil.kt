@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import org.json.JSONException
 import org.json.JSONObject
 import org.json.JSONTokener
-import java.io.*
+import java.io.File
+import java.io.InputStream
 import java.net.URL
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -55,7 +55,10 @@ object OtherUtil {
         if (result.toAbsolutePath().toString().lowercase(Locale.getDefault()).startsWith(WINDOWS_INVALID_PATH)) {
             runCatching {
                 result =
-                    Paths.get(File(JMusicBot::class.java.protectionDomain.codeSource.location.toURI()).parentFile.path, path)
+                    Paths.get(
+                        File(JMusicBot::class.java.protectionDomain.codeSource.location.toURI()).parentFile.path,
+                        path
+                    )
             }
         }
 
@@ -183,13 +186,11 @@ object OtherUtil {
                     .execute()
                 val body = response.body()
                 if (body != null) {
-                    try {
+                    response.use { _ ->
                         body.charStream().use { reader ->
                             val obj = JSONObject(JSONTokener(reader))
                             return obj.getString("tag_name")
                         }
-                    } finally {
-                        response.close()
                     }
                 } else return null
             }

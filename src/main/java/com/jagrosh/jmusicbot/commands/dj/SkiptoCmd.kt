@@ -17,7 +17,6 @@ package com.jagrosh.jmusicbot.commands.dj
 
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.DJCommand
 
@@ -35,16 +34,13 @@ class SkiptoCmd(bot: Bot) : DJCommand(bot) {
     }
 
     override fun runCommand(event: CommandEvent) {
-        var index = 0
-        index = try {
-            event.args.toInt()
-        } catch (e: NumberFormatException) {
-            event.reply(event.client.error + " `" + event.args + "` is not a valid integer!")
-            return
-        }
-        val handler = event.audioHandler()
+        val index = event.args.toIntOrNull()
 
-        if (handler != null) {
+        if (index == null) {
+            event.reply(event.client.error + " `" + event.args + "` is not a valid integer!")
+        } else {
+            val handler = event.audioHandler()
+
             if (index < 1 || index > handler.queue.size()) {
                 event.reply(
                     event.client.error + " Position must be a valid integer between 1 and " + handler.queue
@@ -52,8 +48,9 @@ class SkiptoCmd(bot: Bot) : DJCommand(bot) {
                 )
                 return
             }
+
             handler.queue.skip(index - 1)
-            event.reply(event.client.success + " Skipped to **" + handler.queue[0].track.info.title + "**")
+            event.reply("${event.client.success} Skipped to **${handler.queue[0].track.info.title}**")
             handler.player.stopTrack()
         }
     }

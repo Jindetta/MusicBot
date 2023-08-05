@@ -25,7 +25,7 @@ import javax.swing.JTextArea
  *
  * @author Lawrence Dol
  */
-class TextAreaOutputStream @JvmOverloads constructor(txtara: JTextArea, maxlin: Int = 1000) : OutputStream() {
+class TextAreaOutputStream @JvmOverloads constructor(textArea: JTextArea, lines: Int = 1000) : OutputStream() {
     // *************************************************************************************************
     // INSTANCE MEMBERS
     // *************************************************************************************************
@@ -35,9 +35,9 @@ class TextAreaOutputStream @JvmOverloads constructor(txtara: JTextArea, maxlin: 
             : Appender?
 
     init {
-        require(maxlin >= 1) { "TextAreaOutputStream maximum lines must be positive (value=$maxlin)" }
+        require(lines >= 1) { "TextAreaOutputStream maximum lines must be positive (value=$lines)" }
         oneByte = ByteArray(1)
-        appender = Appender(txtara, maxlin)
+        appender = Appender(textArea, lines)
     }
 
     /** Clear the current console text area.  */
@@ -82,7 +82,7 @@ class TextAreaOutputStream @JvmOverloads constructor(txtara: JTextArea, maxlin: 
         private val maxLines: Int
     ) : Runnable {
         private val lengths // length of lines within text area
-                : LinkedList<Int>
+                : LinkedList<Int> = LinkedList()
         private val values // values waiting to be appended
                 : MutableList<String>
         private var curLength // length of current line
@@ -91,7 +91,6 @@ class TextAreaOutputStream @JvmOverloads constructor(txtara: JTextArea, maxlin: 
         private var queue: Boolean
 
         init {
-            lengths = LinkedList()
             values = ArrayList()
             curLength = 0
             clear = false
@@ -125,19 +124,19 @@ class TextAreaOutputStream @JvmOverloads constructor(txtara: JTextArea, maxlin: 
             if (clear) {
                 textArea.text = ""
             }
-            values.stream().map<String> { `val`: String ->
-                curLength += `val`.length
-                `val`
-            }.map<String> { `val`: String ->
-                if (`val`.endsWith(EOL1) || `val`.endsWith(EOL2)) {
+            values.map { value ->
+                curLength += value.length
+                value
+            }.map { value ->
+                if (value.endsWith(EOL1) || value.endsWith(EOL2)) {
                     if (lengths.size >= maxLines) {
                         textArea.replaceRange("", 0, lengths.removeFirst())
                     }
                     lengths.addLast(curLength)
                     curLength = 0
                 }
-                `val`
-            }.forEach { `val`: String? -> textArea.append(`val`) }
+                value
+            }.forEach { value -> textArea.append(value) }
             values.clear()
             clear = false
             queue = true

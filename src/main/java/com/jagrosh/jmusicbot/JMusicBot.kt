@@ -126,7 +126,7 @@ object JMusicBot {
                 PingCommand(),
                 SettingsCmd(bot),
                 LyricsCmd(bot),
-                NowplayingCmd(bot),
+                NowPlayingCmd(bot),
                 PlayCmd(bot),
                 PlaylistsCmd(bot),
                 QueueCmd(bot),
@@ -137,33 +137,37 @@ object JMusicBot {
                 SeekToCmd(bot),
                 SkipCmd(bot),
                 ForceRemoveCmd(bot),
-                ForceskipCmd(bot),
+                ForceSkipCmd(bot),
                 MoveTrackCmd(bot),
                 PauseCmd(bot),
-                PlaynextCmd(bot),
+                PlayNextCmd(bot),
                 RepeatCmd(bot),
                 SkiptoCmd(bot),
                 StopCmd(bot),
                 VolumeCmd(bot),
                 PrefixCmd(bot),
-                SetdjCmd(bot),
-                SkipratioCmd(bot),
-                SettcCmd(bot),
-                SetvcCmd(bot),
-                AutoplaylistCmd(bot),
+                SetDJCmd(bot),
+                SkipRatioCmd(bot),
+                SetTextChannelCmd(bot),
+                SetVoiceChannelCmd(bot),
+                AutoPlaylistCmd(bot),
                 DebugCmd(bot),
                 PlaylistCmd(bot),
-                SetavatarCmd(bot),
-                SetgameCmd(bot),
-                SetnameCmd(bot),
-                SetstatusCmd(bot),
+                SetAvatarCmd(bot),
+                SetGameCmd(bot),
+                SetNameCmd(bot),
+                SetStatusCmd(bot),
                 ShutdownCmd(bot)
             )
 
         if (config.useEval()) commandBuilder.addCommand(EvalCmd(bot))
         var nogame = false
         if (config.status != OnlineStatus.UNKNOWN) commandBuilder.setStatus(config.status)
-        if (config.game == null) commandBuilder.useDefaultGame() else if (config.game?.name.equals("none", ignoreCase = true)) {
+        if (config.game == null) commandBuilder.useDefaultGame() else if (config.game?.name.equals(
+                "none",
+                ignoreCase = true
+            )
+        ) {
             commandBuilder.setActivity(null)
             nogame = true
         } else commandBuilder.setActivity(config.game)

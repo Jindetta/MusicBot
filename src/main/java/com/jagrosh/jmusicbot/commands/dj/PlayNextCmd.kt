@@ -17,7 +17,6 @@ package com.jagrosh.jmusicbot.commands.dj
 
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audio.QueuedTrack
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.DJCommand
@@ -33,7 +32,7 @@ import net.dv8tion.jda.api.entities.Message
  *
  * @author John Grosh (john.a.grosh@gmail.com)
  */
-class PlaynextCmd(bot: Bot) : DJCommand(bot) {
+class PlayNextCmd(bot: Bot) : DJCommand(bot) {
     private val loadingEmoji: String
 
     init {
@@ -72,13 +71,18 @@ class PlaynextCmd(bot: Bot) : DJCommand(bot) {
         private fun loadSingle(track: AudioTrack) {
             if (bot.config.isTooLong(track)) {
                 m.editMessage(
-                        "${event.client.warning} This track (**${track.info.title}**) is longer than the allowed maximum: `${FormatUtil.formatTime(track.duration)}` > `${FormatUtil.formatTime(bot.config.maxSeconds * 1000)}`".filter()
+                    "${event.client.warning} This track (**${track.info.title}**) is longer than the allowed maximum: `${
+                        FormatUtil.formatTime(
+                            track.duration
+                        )
+                    }` > `${FormatUtil.formatTime(bot.config.maxSeconds * 1000)}`".filter()
                 ).queue()
                 return
             }
             val handler = event.audioHandler()
             val pos = handler.addTrackToFront(QueuedTrack(track, event.author)) + 1
-            val addMsg = ("${event.client.success} Added **${track.info.title}** (`${FormatUtil.formatTime(track.duration)}`) " + if (pos == 0) "to begin playing" else " to the queue at position $pos").filter()
+            val addMsg =
+                ("${event.client.success} Added **${track.info.title}** (`${FormatUtil.formatTime(track.duration)}`) " + if (pos == 0) "to begin playing" else " to the queue at position $pos").filter()
             m.editMessage(addMsg).queue()
         }
 
@@ -87,8 +91,7 @@ class PlaynextCmd(bot: Bot) : DJCommand(bot) {
         }
 
         override fun playlistLoaded(playlist: AudioPlaylist) {
-            val single: AudioTrack
-            single =
+            val single: AudioTrack =
                 if (playlist.tracks.size == 1 || playlist.isSearchResult) if (playlist.selectedTrack == null) playlist.tracks[0] else playlist.selectedTrack else if (playlist.selectedTrack != null) playlist.selectedTrack else playlist.tracks[0]
             loadSingle(single)
         }

@@ -17,7 +17,6 @@ package com.jagrosh.jmusicbot.commands.music
 
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.MusicCommand
 
@@ -36,13 +35,11 @@ class ShuffleCmd(bot: Bot) : MusicCommand(bot) {
 
     override fun runCommand(event: CommandEvent) {
         val handler = event.audioHandler()
-        if (handler != null) {
-            val s = handler.queue.shuffle(event.author.idLong)
-            when (s) {
-                0 -> event.replyError("You don't have any music in the queue to shuffle!")
-                1 -> event.replyWarning("You only have one song in the queue!")
-                else -> event.replySuccess("You successfully shuffled your $s entries.")
-            }
+
+        when (val shuffledTracks = handler.queue.shuffle(event.author.idLong)) {
+            0 -> event.replyError("You don't have any music in the queue to shuffle!")
+            1 -> event.replyWarning("You only have one song in the queue!")
+            else -> event.replySuccess("You successfully shuffled your $shuffledTracks entries.")
         }
     }
 }

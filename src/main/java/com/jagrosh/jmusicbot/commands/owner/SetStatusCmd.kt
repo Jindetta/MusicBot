@@ -25,7 +25,7 @@ import java.util.*
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-class SetstatusCmd(bot: Bot) : OwnerCommand() {
+class SetStatusCmd(bot: Bot) : OwnerCommand() {
     init {
         name = "setstatus"
         help = "sets the status the bot displays"

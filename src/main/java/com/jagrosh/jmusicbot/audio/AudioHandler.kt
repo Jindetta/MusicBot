@@ -16,6 +16,7 @@
 package com.jagrosh.jmusicbot.audio
 
 import com.jagrosh.jmusicbot.filter
+import com.jagrosh.jmusicbot.formatTime
 import com.jagrosh.jmusicbot.queue.FairQueue
 import com.jagrosh.jmusicbot.settings.RepeatMode
 import com.jagrosh.jmusicbot.utils.FormatUtil
@@ -172,13 +173,16 @@ class AudioHandler(private val manager: PlayerManager, guild: Guild, val player:
     }
 
     fun seekTrack(position: Long): Message {
+        val messageBuilder = MessageBuilder()
+
         if (player.playingTrack.isSeekable) {
             player.playingTrack.position = position
+            messageBuilder.setContent("${manager.bot.config.success} Seeking to `${position.formatTime()}`...".filter())
+        } else {
+            messageBuilder.setContent("Unable to seek this type of content")
         }
 
-        return MessageBuilder()
-            .setContent("Seek to $position")
-            .build()
+        return messageBuilder.build()
     }
 
     fun getNoMusicPlaying(jda: JDA?): Message {

@@ -83,7 +83,7 @@ class NowPlayingHandler(private val bot: Bot) {
             val otherText: String
             val topic = tchan.topic
             otherText =
-                if (topic == null || topic.isEmpty()) "\u200B" else if (topic.contains("\u200B")) topic.substring(
+                if (topic.isNullOrEmpty()) "\u200B" else if (topic.contains("\u200B")) topic.substring(
                     topic.lastIndexOf("\u200B")
                 ) else "\u200B\n $topic"
             val text = handler.getTopicFormat(bot.jda) + otherText

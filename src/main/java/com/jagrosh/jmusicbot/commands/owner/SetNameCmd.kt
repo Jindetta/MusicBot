@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-class SetnameCmd(bot: Bot) : OwnerCommand() {
+class SetNameCmd(bot: Bot) : OwnerCommand() {
     init {
         name = "setname"
         help = "sets the name of the bot"
@@ -35,9 +35,9 @@ class SetnameCmd(bot: Bot) : OwnerCommand() {
 
     override fun execute(event: CommandEvent) {
         try {
-            val oldname = event.selfUser.name
+            val oldName = event.selfUser.name
             event.selfUser.manager.setName(event.args).complete(false)
-            event.reply(event.client.success + " Name changed from `" + oldname + "` to `" + event.args + "`")
+            event.reply(event.client.success + " Name changed from `" + oldName + "` to `" + event.args + "`")
         } catch (e: RateLimitedException) {
             event.reply(event.client.error + " Name can only be changed twice per hour!")
         } catch (e: Exception) {

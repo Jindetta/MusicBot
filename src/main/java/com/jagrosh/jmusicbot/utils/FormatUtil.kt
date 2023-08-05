@@ -53,7 +53,7 @@ object FormatUtil {
     }
 
     fun listTextChannels(list: List<TextChannel>, query: String, limit: Int = 6): String {
-        val stringBuilder = StringBuilder( " Multiple text channels found matching \"$query\":\n")
+        val stringBuilder = StringBuilder(" Multiple text channels found matching \"$query\":\n")
 
         for (channel in list.take(limit)) {
             stringBuilder.append(" - ${channel.name} (<#${channel.id}>)\n")

@@ -30,11 +30,11 @@ class Settings(
     var textId: Long,
     var voiceId: Long,
     var roleId: Long,
-    private var _volume: Int,
-    private var _defaultPlaylist: String?,
-    private var _repeatMode: RepeatMode,
-    private var _prefix: String?,
-    var _skipRatio: Double
+    volume: Int,
+    defaultPlaylist: String?,
+    repeatMode: RepeatMode,
+    prefix: String?,
+    skipRatio: Double
 ) : GuildSettingsProvider {
 
     constructor(
@@ -59,31 +59,31 @@ class Settings(
         skipRatio
     )
 
-    var volume = _volume
+    var volume = volume
         set(value) {
             field = value
             manager.writeSettings()
         }
 
-    var defaultPlaylist = _defaultPlaylist
+    var defaultPlaylist = defaultPlaylist
         set(value) {
             field = value
             manager.writeSettings()
         }
 
-    var repeatMode = _repeatMode
+    var repeatMode = repeatMode
         set(value) {
             field = value
             manager.writeSettings()
         }
 
-    var prefix = _prefix
+    var prefix = prefix
         set(value) {
             field = value
             manager.writeSettings()
         }
 
-    var skipRatio = _skipRatio
+    var skipRatio = skipRatio
         set(value) {
             field = value
             manager.writeSettings()

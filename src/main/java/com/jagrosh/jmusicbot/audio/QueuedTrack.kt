@@ -38,8 +38,7 @@ class QueuedTrack(val track: AudioTrack, rm: RequestMetadata?) : Queueable {
     override fun toString(): String {
         var entry = "`[" + FormatUtil.formatTime(track.duration) + "]` "
         val trackInfo = track.info
-        entry =
-            entry + if (trackInfo.uri.startsWith("http")) "[**" + trackInfo.title + "**](" + trackInfo.uri + ")" else "**" + trackInfo.title + "**"
+        entry += if (trackInfo.uri.startsWith("http")) "[**" + trackInfo.title + "**](" + trackInfo.uri + ")" else "**" + trackInfo.title + "**"
         return entry + " - <@" + track.getUserData(RequestMetadata::class.java).owner + ">"
     }
 }

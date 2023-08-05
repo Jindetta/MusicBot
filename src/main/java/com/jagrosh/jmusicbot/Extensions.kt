@@ -2,8 +2,7 @@ package com.jagrosh.jmusicbot
 
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jmusicbot.audio.AudioHandler
-import java.lang.IllegalArgumentException
-import java.lang.NumberFormatException
+import kotlin.math.roundToLong
 
 fun CommandEvent.audioHandler(): AudioHandler {
     val audioHandler = guild.audioManager.sendingHandler as? AudioHandler
@@ -13,7 +12,7 @@ fun CommandEvent.audioHandler(): AudioHandler {
 
 fun Long.formatTime(): String {
     if (this == Long.MAX_VALUE) return "LIVE"
-    var seconds = Math.round(this / 1000.0)
+    var seconds = (this / 1000.0).roundToLong()
     val hours = seconds / (60 * 60)
     seconds %= (60 * 60).toLong()
     val minutes = seconds / 60
@@ -30,14 +29,17 @@ fun String.timeToLong(): Long {
                 val (seconds) = parts
                 seconds.toSeconds().toMillis()
             }
+
             2 -> {
                 val (minutes, seconds) = parts
                 (minutes.toMinutes() + seconds.toSeconds()).toMillis()
             }
+
             3 -> {
                 val (hours, minutes, seconds) = parts
                 (hours.toHours() + minutes.toMinutes() + seconds.toSeconds()).toMillis()
             }
+
             else -> throw IllegalArgumentException("Illegal time format [[hh]:mm]:ss")
         }
     } catch (_: NumberFormatException) {

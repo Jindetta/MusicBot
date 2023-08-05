@@ -25,7 +25,7 @@ import java.util.*
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-class SetgameCmd(bot: Bot) : OwnerCommand() {
+class SetGameCmd(bot: Bot) : OwnerCommand() {
     init {
         name = "setgame"
         help = "sets the game the bot is playing"

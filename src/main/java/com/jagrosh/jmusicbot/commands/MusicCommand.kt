@@ -50,18 +50,18 @@ abstract class MusicCommand(protected val bot: Bot) : Command() {
 
         bot.playerManager.setUpHandler(event.guild) // no point constantly checking for this later
 
-        if (bePlaying && event.audioHandler()?.isMusicPlaying(event.jda) == false) {
-            event.reply(event.client.error + " There must be music playing to use that!")
+        if (bePlaying && !event.audioHandler().isMusicPlaying(event.jda)) {
+            event.reply("${event.client.error} There must be music playing to use that!")
             return
         }
 
         if (beListening) {
-            val current = event.guild.selfMember.voiceState?.channel ?: settings.getVoiceChannel(event.guild)
+            val currentChannel = event.guild.selfMember.voiceState?.channel ?: settings.getVoiceChannel(event.guild)
 
             val userState = event.member.voiceState
-            if (userState?.inVoiceChannel() == false || userState?.isDeafened == true || current != null && userState?.channel != current) {
+            if (userState?.inVoiceChannel() == false || userState?.isDeafened == true || currentChannel != null && userState?.channel != currentChannel) {
                 event.replyError(
-                    "You must be listening in " + (current?.asMention
+                    "You must be listening in " + (currentChannel?.asMention
                         ?: "a voice channel") + " to use that!"
                 )
                 return

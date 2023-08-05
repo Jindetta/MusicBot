@@ -193,10 +193,10 @@ class BotConfig(private val prompt: Prompt) {
 
     private fun writeToFile() {
         val bytes: ByteArray = loadDefaultConfig().replace("BOT_TOKEN_HERE", token!!)
-            .replace("0 // OWNER ID", java.lang.Long.toString(ownerId))
+            .replace("0 // OWNER ID", ownerId.toString())
             .trim { it <= ' ' }.toByteArray()
         try {
-            Files.write(path, bytes)
+            path?.let { Files.write(it, bytes) }
         } catch (ex: IOException) {
             prompt.alert(
                 Prompt.Level.WARNING, CONTEXT, """

@@ -52,7 +52,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
             }
         })
         if (bot.config.useUpdateAlerts()) {
-            bot.threadPool.scheduleWithFixedDelay({
+            /*bot.threadPool.scheduleWithFixedDelay({
                 try {
                     val owner = bot.jda?.retrieveUserById(bot.config.ownerId)?.complete()
                     if (owner != null) {
@@ -65,7 +65,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
                     }
                 } catch (_: Exception) {
                 } // ignored
-            }, 0, 24, TimeUnit.HOURS)
+            }, 0, 24, TimeUnit.HOURS)*/
         }
     }
 

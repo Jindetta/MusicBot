@@ -13,46 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jagrosh.jmusicbot;
+package com.jagrosh.jmusicbot
 
-import com.jagrosh.jmusicbot.queue.FairQueue;
-import com.jagrosh.jmusicbot.queue.Queueable;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import com.jagrosh.jmusicbot.queue.FairQueue
+import com.jagrosh.jmusicbot.queue.Queueable
+import org.junit.Assert
+import org.junit.Test
 
 /**
  * @author John Grosh (john.a.grosh@gmail.com)
  */
-public class FairQueueTest {
+class FairQueueTest {
     @Test
-    public void differentIdentifierSize() {
-        FairQueue<Q> queue = new FairQueue<>();
-        int size = 100;
-        for (int i = 0; i < size; i++)
-            queue.add(new Q(i));
-        assertEquals(queue.size(), size);
-    }
+    fun differentIdentifierSize() {
+        val queue = FairQueue<FakeQueue>()
+        val size = 100
 
-    @Test
-    public void sameIdentifierSize() {
-        FairQueue<Q> queue = new FairQueue<>();
-        int size = 100;
-        for (int i = 0; i < size; i++)
-            queue.add(new Q(0));
-        assertEquals(queue.size(), size);
-    }
-
-    private class Q implements Queueable {
-        private final long identifier;
-
-        private Q(long identifier) {
-            this.identifier = identifier;
+        for (i in 0 until size) {
+            queue.add(FakeQueue(i.toLong()))
         }
 
-        @Override
-        public long getIdentifier() {
-            return identifier;
-        }
+        Assert.assertEquals(queue.size(), size)
     }
+
+    @Test
+    fun sameIdentifierSize() {
+        val queue = FairQueue<FakeQueue>()
+        val size = 100
+
+        for (i in 0 until size) {
+            queue.add(FakeQueue(0))
+        }
+
+        Assert.assertEquals(queue.size().toLong(), size.toLong())
+    }
+
+    private class FakeQueue(override val identifier: Long) : Queueable
 }

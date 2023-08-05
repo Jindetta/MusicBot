@@ -21,7 +21,6 @@ import com.jagrosh.jmusicbot.Bot
 import com.jagrosh.jmusicbot.filter
 import com.jagrosh.jmusicbot.settings.RepeatMode
 import com.jagrosh.jmusicbot.settings.Settings
-import com.jagrosh.jmusicbot.utils.FormatUtil
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Guild

@@ -18,7 +18,6 @@ package com.jagrosh.jmusicbot.commands.music
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jdautilities.menu.OrderedMenu
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audio.QueuedTrack
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.MusicCommand
@@ -83,7 +82,7 @@ open class SearchCmd(bot: Bot) : MusicCommand(bot) {
                 return
             }
             val handler = event.audioHandler()
-            val pos = handler!!.addTrack(QueuedTrack(track, event.author)) + 1
+            val pos = handler.addTrack(QueuedTrack(track, event.author)) + 1
             message.editMessage(
                 FormatUtil.filter(
                     event.client.success + " Added **" + track.info.title
@@ -96,7 +95,7 @@ open class SearchCmd(bot: Bot) : MusicCommand(bot) {
             builder.setColor(event.selfMember.color)
                 .setText(FormatUtil.filter(event.client.success + " Search results for `" + event.args + "`:"))
                 .setChoices(*arrayOfNulls(0))
-                .setSelection { msg: Message?, i: Int ->
+                .setSelection { _: Message?, i: Int ->
                     val track = playlist.tracks[i - 1]
                     if (bot.config.isTooLong(track)) {
                         event.replyWarning(
@@ -106,7 +105,7 @@ open class SearchCmd(bot: Bot) : MusicCommand(bot) {
                         return@setSelection
                     }
                     val handler = event.audioHandler()
-                    val pos = handler!!.addTrack(QueuedTrack(track, event.author)) + 1
+                    val pos = handler.addTrack(QueuedTrack(track, event.author)) + 1
                     event.replySuccess(
                         "Added **" + FormatUtil.filter(track.info.title)
                                 + "** (`" + FormatUtil.formatTime(track.duration) + "`) " + if (pos == 0) "to begin playing" else " to the queue at position $pos"

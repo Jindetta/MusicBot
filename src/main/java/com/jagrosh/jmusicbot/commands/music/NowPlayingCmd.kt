@@ -17,7 +17,7 @@ package com.jagrosh.jmusicbot.commands.music
 
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
+import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.MusicCommand
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
@@ -26,7 +26,7 @@ import net.dv8tion.jda.api.entities.Message
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-class NowplayingCmd(bot: Bot) : MusicCommand(bot) {
+class NowPlayingCmd(bot: Bot) : MusicCommand(bot) {
     init {
         name = "nowplaying"
         help = "shows the song that is currently playing"
@@ -35,15 +35,14 @@ class NowplayingCmd(bot: Bot) : MusicCommand(bot) {
     }
 
     override fun runCommand(event: CommandEvent) {
-        val handler = event.guild.audioManager.sendingHandler as? AudioHandler
-        if (handler != null) {
-            val m = handler.getNowPlaying(event.jda)
-            if (m == null) {
-                event.reply(handler.getNoMusicPlaying(event.jda))
-                bot.nowPlayingHandler.clearLastNPMessage(event.guild)
-            } else {
-                event.reply(m) { msg: Message -> bot.nowPlayingHandler.setLastNPMessage(msg) }
-            }
+        val handler = event.audioHandler()
+
+        val m = handler.getNowPlaying(event.jda)
+        if (m == null) {
+            event.reply(handler.getNoMusicPlaying(event.jda))
+            bot.nowPlayingHandler.clearLastNPMessage(event.guild)
+        } else {
+            event.reply(m) { msg: Message -> bot.nowPlayingHandler.setLastNPMessage(msg) }
         }
     }
 }

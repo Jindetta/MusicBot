@@ -132,7 +132,7 @@ class PlaylistCmd(private val bot: Bot) : OwnerCommand() {
         }
     }
 
-    inner class DefaultlistCmd(bot: Bot) : AutoplaylistCmd(bot) {
+    inner class DefaultlistCmd(bot: Bot) : AutoPlaylistCmd(bot) {
         init {
             this.name = "setdefault"
             this.aliases = arrayOf("default")
@@ -156,7 +156,7 @@ class PlaylistCmd(private val bot: Bot) : OwnerCommand() {
                 return
             }
             val list = bot.playlistLoader.playlistNames
-            if (list == null) event.reply(event.client.error + " Failed to load available playlists!") else if (list.isEmpty()) event.reply(
+            if (list.isEmpty()) event.reply(
                 event.client.warning + " There are no playlists in the Playlists folder!"
             ) else {
                 val builder = StringBuilder(event.client.success + " Available playlists:\n")

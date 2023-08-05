@@ -26,30 +26,30 @@ import com.jagrosh.jmusicbot.utils.FormatUtil
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-class SetvcCmd(bot: Bot) : AdminCommand() {
+class SetTextChannelCmd(bot: Bot) : AdminCommand() {
     init {
-        name = "setvc"
-        help = "sets the voice channel for playing music"
+        name = "settc"
+        help = "sets the text channel for music commands"
         arguments = "<channel|NONE>"
         aliases = bot.config.getAliases(name)
     }
 
     override fun execute(event: CommandEvent) {
         if (event.args.isEmpty()) {
-            event.reply(event.client.error + " Please include a voice channel or NONE")
+            event.reply(event.client.error + " Please include a text channel or NONE")
             return
         }
         val s = event.client.getSettingsFor<Settings>(event.guild)
         if (event.args.equals("none", ignoreCase = true)) {
-            s.setVoiceChannel(null)
-            event.reply(event.client.success + " Music can now be played in any channel")
+            s.setTextChannel(null)
+            event.reply(event.client.success + " Music commands can now be used in any channel")
         } else {
-            val list = FinderUtil.findVoiceChannels(event.args, event.guild)
-            if (list.isEmpty()) event.reply(event.client.warning + " No Voice Channels found matching \"" + event.args + "\"") else if (list.size > 1) event.reply(
-                event.client.warning + FormatUtil.listVoiceChannels(list, event.args)
+            val list = FinderUtil.findTextChannels(event.args, event.guild)
+            if (list.isEmpty()) event.reply(event.client.warning + " No Text Channels found matching \"" + event.args + "\"") else if (list.size > 1) event.reply(
+                event.client.warning + FormatUtil.listTextChannels(list, event.args)
             ) else {
-                s.setVoiceChannel(list[0])
-                event.reply(event.client.success + " Music can now only be played in " + list[0].asMention)
+                s.setTextChannel(list[0])
+                event.reply(event.client.success + " Music commands can now only be used in <#" + list[0].id + ">")
             }
         }
     }

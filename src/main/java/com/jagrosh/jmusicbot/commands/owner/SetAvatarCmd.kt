@@ -26,7 +26,7 @@ import java.io.IOException
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-class SetavatarCmd(bot: Bot) : OwnerCommand() {
+class SetAvatarCmd(bot: Bot) : OwnerCommand() {
     init {
         name = "setavatar"
         help = "sets the avatar of the bot"
@@ -36,9 +36,8 @@ class SetavatarCmd(bot: Bot) : OwnerCommand() {
     }
 
     override fun execute(event: CommandEvent) {
-        val url: String?
-        url =
-            if (event.args.isEmpty()) if (!event.message.attachments.isEmpty() && event.message.attachments[0].isImage) event.message.attachments[0].url else null else event.args
+        val url: String? =
+            event.args.ifEmpty { if (event.message.attachments.isNotEmpty() && event.message.attachments[0].isImage) event.message.attachments[0].url else null }
         val s = OtherUtil.imageFromUrl(url)
         if (s == null) {
             event.reply(event.client.error + " Invalid or missing URL")

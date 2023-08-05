@@ -35,7 +35,8 @@ abstract class DJCommand(bot: Bot) : MusicCommand(bot) {
         fun checkDJPermission(event: CommandEvent): Boolean {
             if (event.guild == null ||
                 event.author.id == event.client.ownerId ||
-                event.member.hasPermission(Permission.MANAGE_SERVER)) {
+                event.member.hasPermission(Permission.MANAGE_SERVER)
+            ) {
                 return true
             }
 

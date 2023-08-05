@@ -18,7 +18,6 @@ package com.jagrosh.jmusicbot.commands.music
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jdautilities.menu.ButtonMenu
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audio.QueuedTrack
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.DJCommand
@@ -57,24 +56,22 @@ class PlayCmd(bot: Bot) : MusicCommand(bot) {
     override fun runCommand(event: CommandEvent) {
         if (event.args.isEmpty() && event.message.attachments.isEmpty()) {
             val handler = event.audioHandler()
-            if (handler != null) {
-                if (handler.player.playingTrack != null && handler.player.isPaused) {
-                    if (DJCommand.checkDJPermission(event)) {
-                        handler.player.isPaused = false
-                        event.replySuccess("Resumed **" + handler.player.playingTrack.info.title + "**.")
-                    } else event.replyError("Only DJs can unpause the player!")
-                    return
-                }
-                val builder = StringBuilder(event.client.warning + " Play Commands:\n")
-                builder.append("\n`").append(event.client.prefix).append(name)
-                    .append(" <song title>` - plays the first result from Youtube")
-                builder.append("\n`").append(event.client.prefix).append(name)
-                    .append(" <URL>` - plays the provided song, playlist, or stream")
-                for (cmd in children) builder.append("\n`").append(event.client.prefix).append(name).append(" ")
-                    .append(cmd.name).append(" ").append(cmd.arguments).append("` - ").append(cmd.help)
-                event.reply(builder.toString())
+
+            if (handler.player.playingTrack != null && handler.player.isPaused) {
+                if (DJCommand.checkDJPermission(event)) {
+                    handler.player.isPaused = false
+                    event.replySuccess("Resumed **" + handler.player.playingTrack.info.title + "**.")
+                } else event.replyError("Only DJs can unpause the player!")
                 return
             }
+            val builder = StringBuilder(event.client.warning + " Play Commands:\n")
+            builder.append("\n`").append(event.client.prefix).append(name)
+                .append(" <song title>` - plays the first result from Youtube")
+            builder.append("\n`").append(event.client.prefix).append(name)
+                .append(" <URL>` - plays the provided song, playlist, or stream")
+            for (cmd in children) builder.append("\n`").append(event.client.prefix).append(name).append(" ")
+                .append(cmd.name).append(" ").append(cmd.arguments).append("` - ").append(cmd.help)
+            event.reply(builder.toString())
             return
         }
         val args = if (event.args.startsWith("<") && event.args.endsWith(">")) event.args.substring(
@@ -139,15 +136,17 @@ ${event.client.success} Loaded **${loadPlaylist(playlist, track)}** additional t
         }
 
         private fun loadPlaylist(playlist: AudioPlaylist, exclude: AudioTrack?): Int {
-            val count = intArrayOf(0)
-            playlist.tracks.stream().forEach { track: AudioTrack ->
+            val handler = event.audioHandler()
+            var count = 0
+
+            for (track in playlist.tracks) {
                 if (!bot.config.isTooLong(track) && track != exclude) {
-                    val handler = event.audioHandler()
-                    handler!!.addTrack(QueuedTrack(track, event.author))
-                    count[0]++
+                    handler.addTrack(QueuedTrack(track, event.author))
+                    count++
                 }
             }
-            return count[0]
+
+            return count
         }
 
         override fun trackLoaded(track: AudioTrack) {
@@ -231,10 +230,10 @@ ${event.client.warning} Tracks longer than the allowed maximum (`${bot.config.ma
                     val handler = event.audioHandler()
                     playlist.loadTracks(
                         bot.playerManager,
-                        { at: AudioTrack? -> handler!!.addTrack(QueuedTrack(at!!, event.author)) }) {
+                        { at: AudioTrack? -> handler.addTrack(QueuedTrack(at!!, event.author)) }) {
                         val builder =
                             StringBuilder(if (playlist.tracks.isEmpty()) event.client.warning + " No tracks were loaded!" else event.client.success + " Loaded **" + playlist.tracks.size + "** tracks!")
-                        if (!playlist.errors.isEmpty()) builder.append("\nThe following tracks failed to load:")
+                        if (playlist.errors.isNotEmpty()) builder.append("\nThe following tracks failed to load:")
                         playlist.errors.forEach(Consumer { err: PlaylistLoadError ->
                             builder.append("\n`[").append(err.index + 1).append("]` **").append(err.item).append("**: ")
                                 .append(err.reason)

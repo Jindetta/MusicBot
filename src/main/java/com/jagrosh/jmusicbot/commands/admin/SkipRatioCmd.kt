@@ -24,7 +24,7 @@ import com.jagrosh.jmusicbot.settings.Settings
  *
  * @author John Grosh (john.a.grosh@gmail.com)
  */
-class SkipratioCmd(bot: Bot) : AdminCommand() {
+class SkipRatioCmd(bot: Bot) : AdminCommand() {
     init {
         name = "setskip"
         help = "sets a server-specific skip percentage"
@@ -41,7 +41,7 @@ class SkipratioCmd(bot: Bot) : AdminCommand() {
                 return
             }
             val s = event.client.getSettingsFor<Settings>(event.guild)
-            s._skipRatio = `val` / 100.0
+            s.skipRatio = `val` / 100.0
             event.replySuccess("Skip percentage has been set to `" + `val` + "%` of listeners on *" + event.guild.name + "*")
         } catch (ex: NumberFormatException) {
             event.replyError("Please include an integer between 0 and 100 (default is 55). This number is the percentage of listening users that must vote to skip a song.")

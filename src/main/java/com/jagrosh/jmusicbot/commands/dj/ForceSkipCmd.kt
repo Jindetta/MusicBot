@@ -17,7 +17,6 @@ package com.jagrosh.jmusicbot.commands.dj
 
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.DJCommand
 
@@ -25,7 +24,7 @@ import com.jagrosh.jmusicbot.commands.DJCommand
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-class ForceskipCmd(bot: Bot) : DJCommand(bot) {
+class ForceSkipCmd(bot: Bot) : DJCommand(bot) {
     init {
         name = "forceskip"
         help = "skips the current song"
@@ -35,13 +34,12 @@ class ForceskipCmd(bot: Bot) : DJCommand(bot) {
 
     override fun runCommand(event: CommandEvent) {
         val handler = event.audioHandler()
-        if (handler != null) {
-            val rm = handler.requestMetadata
-            event.reply(
-                event.client.success + " Skipped **" + handler.player.playingTrack.info.title
-                        + "** " + if (rm.owner == 0L) "(autoplay)" else "(requested by **" + rm.user?.username + "**)"
-            )
-            handler.player.stopTrack()
-        }
+
+        val rm = handler.requestMetadata
+        event.reply(
+            event.client.success + " Skipped **" + handler.player.playingTrack.info.title
+                    + "** " + if (rm.owner == 0L) "(autoplay)" else "(requested by **" + rm.user?.username + "**)"
+        )
+        handler.player.stopTrack()
     }
 }

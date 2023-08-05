@@ -2,7 +2,6 @@ package com.jagrosh.jmusicbot.commands.dj
 
 import com.jagrosh.jdautilities.command.CommandEvent
 import com.jagrosh.jmusicbot.Bot
-import com.jagrosh.jmusicbot.audio.AudioHandler
 import com.jagrosh.jmusicbot.audio.QueuedTrack
 import com.jagrosh.jmusicbot.audioHandler
 import com.jagrosh.jmusicbot.commands.DJCommand
@@ -43,25 +42,23 @@ class MoveTrackCmd(bot: Bot) : DJCommand(bot) {
 
         // Validate that from and to are available
         val handler = event.audioHandler()
-        if (handler != null) {
-            val queue = handler.queue
-            if (isUnavailablePosition(queue, from)) {
-                val reply = String.format("`%d` is not a valid position in the queue!", from)
-                event.replyError(reply)
-                return
-            }
-            if (isUnavailablePosition(queue, to)) {
-                val reply = String.format("`%d` is not a valid position in the queue!", to)
-                event.replyError(reply)
-                return
-            }
-
-            // Move the track
-            val track = queue.moveItem(from - 1, to - 1)
-            val trackTitle = track.track.info.title
-            val reply = String.format("Moved **%s** from position `%d` to `%d`.", trackTitle, from, to)
-            event.replySuccess(reply)
+        val queue = handler.queue
+        if (isUnavailablePosition(queue, from)) {
+            val reply = String.format("`%d` is not a valid position in the queue!", from)
+            event.replyError(reply)
+            return
         }
+        if (isUnavailablePosition(queue, to)) {
+            val reply = String.format("`%d` is not a valid position in the queue!", to)
+            event.replyError(reply)
+            return
+        }
+
+        // Move the track
+        val track = queue.moveItem(from - 1, to - 1)
+        val trackTitle = track.track.info.title
+        val reply = String.format("Moved **%s** from position `%d` to `%d`.", trackTitle, from, to)
+        event.replySuccess(reply)
     }
 
     companion object {
