@@ -41,15 +41,11 @@ class VolumeCmd(bot: Bot) : DJCommand(bot) {
         if (event.args.isEmpty()) {
             event.reply(FormatUtil.volumeIcon(volume) + " Current volume is `" + volume + "`")
         } else {
-            val nvolume: Int = try {
-                event.args.toInt()
-            } catch (e: NumberFormatException) {
-                -1
-            }
-            if (nvolume < 0 || nvolume > 150) event.reply(event.client.error + " Volume must be a valid integer between 0 and 150!") else {
-                handler.player.volume = nvolume
-                settings.volume = nvolume
-                event.reply(FormatUtil.volumeIcon(nvolume) + " Volume changed from `" + volume + "` to `" + nvolume + "`")
+            val newVolume = event.args.toIntOrNull() ?: -1
+            if (newVolume < 0 || newVolume > 150) event.reply(event.client.error + " Volume must be a valid integer between 0 and 150!") else {
+                handler.player.volume = newVolume
+                settings.volume = newVolume
+                event.reply(FormatUtil.volumeIcon(newVolume) + " Volume changed from `" + volume + "` to `" + newVolume + "`")
             }
         }
     }

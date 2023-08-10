@@ -36,20 +36,28 @@ class SetDJCmd(bot: Bot) : AdminCommand() {
 
     override fun execute(event: CommandEvent) {
         if (event.args.isEmpty()) {
-            event.reply(event.client.error + " Please include a role name or NONE")
+            event.reply("${event.client.error} Please include a role name or NONE")
             return
         }
-        val s = event.client.getSettingsFor<Settings>(event.guild)
+
+        val settings = event.client.getSettingsFor<Settings>(event.guild)
         if (event.args.equals("none", ignoreCase = true)) {
-            s.setDJRole(null)
-            event.reply(event.client.success + " DJ role cleared; Only Admins can use the DJ commands.")
+            settings.setDJRole(null)
+            event.reply("${event.client.success} DJ role cleared; Only Admins can use the DJ commands.")
         } else {
             val list = FinderUtil.findRoles(event.args, event.guild)
-            if (list.isEmpty()) event.reply(event.client.warning + " No Roles found matching \"" + event.args + "\"") else if (list.size > 1) event.reply(
-                event.client.warning + FormatUtil.listOfRoles(list, event.args)
-            ) else {
-                s.setDJRole(list[0])
-                event.reply(event.client.success + " DJ commands can now be used by users with the **" + list[0].name + "** role.")
+
+            if (list.isEmpty()) {
+                event.reply("${event.client.warning} No Roles found matching \"${event.args}\"")
+            } else if (list.size > 1) {
+                event.reply(
+                    event.client.warning + FormatUtil.listOfRoles(list, event.args)
+                )
+            } else {
+                val firstItem = list.first()
+
+                settings.setDJRole(firstItem)
+                event.reply("${event.client.success} DJ commands can now be used by users with the **${firstItem.name}** role.")
             }
         }
     }

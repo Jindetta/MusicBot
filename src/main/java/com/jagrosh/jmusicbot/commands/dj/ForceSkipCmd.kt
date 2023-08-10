@@ -34,12 +34,16 @@ class ForceSkipCmd(bot: Bot) : DJCommand(bot) {
 
     override fun runCommand(event: CommandEvent) {
         val handler = event.audioHandler()
+        val requestMetadata = handler.requestMetadata
+        val stringBuilder = StringBuilder("${event.client.success} Skipped **${handler.player.playingTrack.info.title}** ")
 
-        val rm = handler.requestMetadata
-        event.reply(
-            event.client.success + " Skipped **" + handler.player.playingTrack.info.title
-                    + "** " + if (rm.owner == 0L) "(autoplay)" else "(requested by **" + rm.user?.username + "**)"
-        )
+        if (requestMetadata.owner == 0L) {
+            stringBuilder.append("(autoplay)")
+        } else {
+            stringBuilder.append("(requested by **${requestMetadata.user?.username}**)")
+        }
+
+        event.reply(stringBuilder.toString())
         handler.player.stopTrack()
     }
 }

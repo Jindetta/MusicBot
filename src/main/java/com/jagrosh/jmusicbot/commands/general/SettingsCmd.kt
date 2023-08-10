@@ -46,7 +46,7 @@ class SettingsCmd(bot: Bot) : Command() {
         val textChannel = settings.getTextChannel(event.guild)
         val voiceChannel = settings.getVoiceChannel(event.guild)
         val role = settings.getRole(event.guild)
-        val ebuilder = EmbedBuilder()
+        val embedBuilder = EmbedBuilder()
             .setColor(event.selfMember.color)
             .setDescription(
                 """
@@ -60,11 +60,11 @@ class SettingsCmd(bot: Bot) : Command() {
             )
             .setFooter(
                 event.jda.guilds.size.toString() + " servers | "
-                        + event.jda.guilds.stream().filter { g: Guild -> g.selfMember.voiceState!!.inVoiceChannel() }
+                        + event.jda.guilds.stream().filter { guild -> guild.selfMember.voiceState?.inVoiceChannel() == true }
                     .count()
                         + " audio connections", null
             )
-        event.channel.sendMessage(builder.setEmbeds(ebuilder.build()).build()).queue()
+        event.channel.sendMessage(builder.setEmbeds(embedBuilder.build()).build()).queue()
     }
 
     companion object {

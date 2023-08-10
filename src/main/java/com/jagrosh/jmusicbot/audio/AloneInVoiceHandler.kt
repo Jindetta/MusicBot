@@ -29,13 +29,18 @@ import java.util.concurrent.TimeUnit
 class AloneInVoiceHandler(private val bot: Bot) {
     private val aloneSince = HashMap<Long, Instant>()
     private var aloneTimeUntilStop: Long = 0
+
     fun init() {
         aloneTimeUntilStop = bot.config.aloneTimeUntilStop
-        if (aloneTimeUntilStop > 0) bot.threadPool.scheduleWithFixedDelay({ check() }, 0, 5, TimeUnit.SECONDS)
+
+        if (aloneTimeUntilStop > 0) {
+            bot.threadPool.scheduleWithFixedDelay({ check() }, 0, 5, TimeUnit.SECONDS)
+        }
     }
 
     private fun check() {
         val toRemove: MutableSet<Long> = HashSet()
+
         for ((key, value) in aloneSince) {
             if (value.epochSecond > Instant.now().epochSecond - aloneTimeUntilStop) continue
             val guild = bot.jda?.getGuildById(key)
@@ -47,7 +52,8 @@ class AloneInVoiceHandler(private val bot: Bot) {
             guild.audioManager.closeAudioConnection()
             toRemove.add(key)
         }
-        toRemove.forEach { id: Long -> aloneSince.remove(id) }
+
+        toRemove.forEach { id -> aloneSince.remove(id) }
     }
 
     fun onVoiceUpdate(event: GuildVoiceUpdateEvent) {
@@ -56,15 +62,20 @@ class AloneInVoiceHandler(private val bot: Bot) {
         if (!bot.playerManager.hasHandler(guild)) return
         val alone = isAlone(guild)
         val inList = aloneSince.containsKey(guild.idLong)
-        if (!alone && inList) aloneSince.remove(guild.idLong) else if (alone && !inList) aloneSince[guild.idLong] =
-            Instant.now()
+        if (!alone && inList) {
+            aloneSince.remove(guild.idLong)
+        } else if (alone && !inList) {
+            aloneSince[guild.idLong] = Instant.now()
+        }
     }
 
     private fun isAlone(guild: Guild): Boolean {
-        return if (guild.audioManager.connectedChannel == null) false else guild.audioManager.connectedChannel!!.members.stream()
-            .noneMatch { x: Member ->
-                (!x.voiceState!!.isDeafened
-                        && !x.user.isBot)
+        guild.audioManager.connectedChannel?.let { channel ->
+            return channel.members.none { member ->
+                member.voiceState?.isDeafened == false && !member.user.isBot
             }
+        }
+
+        return false
     }
 }

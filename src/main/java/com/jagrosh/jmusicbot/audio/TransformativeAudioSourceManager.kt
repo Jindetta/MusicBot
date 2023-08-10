@@ -70,16 +70,16 @@ class TransformativeAudioSourceManager(
 
     companion object {
         private val log = LoggerFactory.getLogger(TransformativeAudioSourceManager::class.java)
+
         fun createTransforms(transforms: Config): List<TransformativeAudioSourceManager> {
             return try {
-                transforms.root().entries.stream()
-                    .map { (key): Map.Entry<String, ConfigValue?> ->
+                transforms.root().entries
+                    .map { (key) ->
                         TransformativeAudioSourceManager(
                             key,
                             transforms.getConfig(key)
                         )
                     }
-                    .collect(Collectors.toList())
             } catch (ex: Exception) {
                 log.warn("Invalid transform ", ex)
                 emptyList()

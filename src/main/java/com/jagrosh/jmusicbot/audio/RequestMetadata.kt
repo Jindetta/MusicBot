@@ -25,16 +25,17 @@ class RequestMetadata(user: User?) {
     val user: RequestMetadata.UserInfo?
 
     init {
-        this.user =
-            if (user == null) null else UserInfo(user.idLong, user.name, user.discriminator, user.effectiveAvatarUrl)
+        var userInfo: RequestMetadata.UserInfo? = null
+
+        if (user != null) {
+            userInfo = UserInfo(user.idLong, user.name, user.discriminator, user.effectiveAvatarUrl)
+        }
+
+        this.user = userInfo
     }
 
     val owner: Long
         get() = user?.id ?: 0
 
-    inner class RequestInfo(val query: String, val url: String)
-    inner class UserInfo(val id: Long, val username: String, val discrim: String, val avatar: String)
-    companion object {
-        val EMPTY = RequestMetadata(null)
-    }
+    inner class UserInfo(val id: Long, val username: String, val discriminator: String, val avatar: String)
 }

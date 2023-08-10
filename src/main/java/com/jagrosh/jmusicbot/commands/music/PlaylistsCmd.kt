@@ -34,18 +34,28 @@ class PlaylistsCmd(bot: Bot) : MusicCommand(bot) {
     }
 
     override fun runCommand(event: CommandEvent) {
-        if (!bot.playlistLoader.folderExists()) bot.playlistLoader.createFolder()
         if (!bot.playlistLoader.folderExists()) {
-            event.reply(event.client.warning + " Playlists folder does not exist and could not be created!")
+            bot.playlistLoader.createFolder()
+        }
+
+        if (!bot.playlistLoader.folderExists()) {
+            event.reply("${event.client.warning} Playlists folder does not exist and could not be created!")
             return
         }
+
         val list = bot.playlistLoader.playlistNames
-        if (list.isEmpty()) event.reply(event.client.warning + " There are no playlists in the Playlists folder!") else {
-            val builder = StringBuilder(event.client.success + " Available playlists:\n")
-            list.forEach(Consumer { str: String? -> builder.append("`").append(str).append("` ") })
-            builder.append("\nType `").append(event.client.textualPrefix)
-                .append("play playlist <name>` to play a playlist")
-            event.reply(builder.toString())
+
+        if (list.isEmpty()) {
+            event.reply("${event.client.warning} There are no playlists in the Playlists folder!")
+        } else {
+            val stringBuilder = StringBuilder("${event.client.success} Available playlists:\n")
+
+            for (name in list) {
+                stringBuilder.append("`$name` ")
+            }
+
+            event.reply(stringBuilder.append("\nType `").append(event.client.textualPrefix)
+                .append("play playlist <name>` to play a playlist").toString())
         }
     }
 }

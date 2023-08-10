@@ -51,6 +51,7 @@ class Listener(private val bot: Bot) : ListenerAdapter() {
             } catch (ignore: Exception) {
             }
         })
+
         if (bot.config.useUpdateAlerts()) {
             /*bot.threadPool.scheduleWithFixedDelay({
                 try {

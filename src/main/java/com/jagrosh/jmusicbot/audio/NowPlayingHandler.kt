@@ -30,30 +30,32 @@ import java.util.concurrent.TimeUnit
  * @author John Grosh (john.a.grosh@gmail.com)
  */
 class NowPlayingHandler(private val bot: Bot) {
-    private val lastNP // guild -> channel,message
+    private val mostRecentlyPlayed // guild -> channel,message
             : HashMap<Long, Pair<Long, Long>> = HashMap()
 
     fun init() {
-        if (!bot.config.useNPImages()) bot.threadPool.scheduleWithFixedDelay({ updateAll() }, 0, 5, TimeUnit.SECONDS)
+        if (!bot.config.useNPImages()) {
+            bot.threadPool.scheduleWithFixedDelay({ updateAll() }, 0, 5, TimeUnit.SECONDS)
+        }
     }
 
-    fun setLastNPMessage(m: Message) {
-        lastNP[m.guild.idLong] = Pair(m.textChannel.idLong, m.idLong)
+    fun setLastNPMessage(message: Message) {
+        mostRecentlyPlayed[message.guild.idLong] = Pair(message.textChannel.idLong, message.idLong)
     }
 
     fun clearLastNPMessage(guild: Guild) {
-        lastNP.remove(guild.idLong)
+        mostRecentlyPlayed.remove(guild.idLong)
     }
 
     private fun updateAll() {
         val toRemove: MutableSet<Long> = HashSet()
-        for (guildId in lastNP.keys) {
+        for (guildId in mostRecentlyPlayed.keys) {
             val guild = bot.jda?.getGuildById(guildId)
             if (guild == null) {
                 toRemove.add(guildId)
                 continue
             }
-            val pair = lastNP[guildId]!!
+            val pair = mostRecentlyPlayed[guildId]!!
             val tc = guild.getTextChannelById(pair.first)
             if (tc == null) {
                 toRemove.add(guildId)
@@ -67,12 +69,12 @@ class NowPlayingHandler(private val bot: Bot) {
             }
             try {
                 tc.editMessageById(pair.second, msg)
-                    .queue({ m: Message? -> }) { t: Throwable? -> lastNP.remove(guildId) }
+                    .queue({ m: Message? -> }) { t: Throwable? -> mostRecentlyPlayed.remove(guildId) }
             } catch (e: Exception) {
                 toRemove.add(guildId)
             }
         }
-        toRemove.forEach { id: Long -> lastNP.remove(id) }
+        toRemove.forEach { id: Long -> mostRecentlyPlayed.remove(id) }
     }
 
     fun updateTopic(guildId: Long, handler: AudioHandler, wait: Boolean) {
@@ -115,7 +117,9 @@ class NowPlayingHandler(private val bot: Bot) {
     }
 
     fun onMessageDelete(guild: Guild, messageId: Long) {
-        val pair = lastNP[guild.idLong] ?: return
-        if (pair.second == messageId) lastNP.remove(guild.idLong)
+        val pair = mostRecentlyPlayed[guild.idLong] ?: return
+        if (pair.second == messageId) {
+            mostRecentlyPlayed.remove(guild.idLong)
+        }
     }
 }

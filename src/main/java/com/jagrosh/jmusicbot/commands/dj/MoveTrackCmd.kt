@@ -62,8 +62,8 @@ class MoveTrackCmd(bot: Bot) : DJCommand(bot) {
     }
 
     companion object {
-        private fun isUnavailablePosition(queue: FairQueue<QueuedTrack>?, position: Int): Boolean {
-            return position < 1 || position > queue!!.size()
+        private fun isUnavailablePosition(queue: FairQueue<QueuedTrack>, position: Int): Boolean {
+            return position < 1 || position > queue.size()
         }
     }
 }

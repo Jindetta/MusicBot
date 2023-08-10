@@ -142,7 +142,7 @@ object JMusicBot {
                 PauseCmd(bot),
                 PlayNextCmd(bot),
                 RepeatCmd(bot),
-                SkiptoCmd(bot),
+                SkipToCmd(bot),
                 StopCmd(bot),
                 VolumeCmd(bot),
                 PrefixCmd(bot),
@@ -195,10 +195,10 @@ object JMusicBot {
                 .addEventListeners(commandBuilder.build(), waiter, Listener(bot))
                 .setBulkDeleteSplittingEnabled(true)
                 .build()
+
             bot.jda = jda
         } catch (ex: LoginException) {
-            prompt.alert(
-                Prompt.Level.ERROR, "JMusicBot", """
+            prompt.alert(Prompt.Level.ERROR, "JMusicBot", """
      $ex
      Please make sure you are editing the correct config.txt file, and that you have used the correct token (not the 'secret'!)
      Config Location: ${config.configLocation}
@@ -222,5 +222,13 @@ object JMusicBot {
             )
             exitProcess(1)
         }
+    }
+
+    private fun getStatus(status: OnlineStatus): OnlineStatus {
+        if (status == OnlineStatus.INVISIBLE || status == OnlineStatus.OFFLINE) {
+            return OnlineStatus.INVISIBLE
+        }
+
+        return OnlineStatus.DO_NOT_DISTURB
     }
 }

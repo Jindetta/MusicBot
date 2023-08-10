@@ -19,26 +19,33 @@ import com.jagrosh.jmusicbot.queue.Queueable
 import com.jagrosh.jmusicbot.utils.FormatUtil
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.api.entities.User
+import java.text.Normalizer.Form
 
 /**
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-class QueuedTrack(val track: AudioTrack, rm: RequestMetadata?) : Queueable {
+class QueuedTrack(val track: AudioTrack, requestMetaData: RequestMetadata?) : Queueable {
 
     constructor(track: AudioTrack, owner: User?) : this(track, RequestMetadata(owner))
 
     init {
-        track.userData = rm
+        track.userData = requestMetaData
     }
 
     override val identifier: Long
         get() = track.getUserData(RequestMetadata::class.java).owner
 
     override fun toString(): String {
-        var entry = "`[" + FormatUtil.formatTime(track.duration) + "]` "
+        val stringBuilder = StringBuilder("`[${FormatUtil.formatTime(track.duration)}] ")
         val trackInfo = track.info
-        entry += if (trackInfo.uri.startsWith("http")) "[**" + trackInfo.title + "**](" + trackInfo.uri + ")" else "**" + trackInfo.title + "**"
-        return entry + " - <@" + track.getUserData(RequestMetadata::class.java).owner + ">"
+
+        if (trackInfo.uri.startsWith("http")) {
+            stringBuilder.append("[**${trackInfo.title}**](${trackInfo.uri})")
+        } else {
+            stringBuilder.append("**${trackInfo.title}**")
+        }
+
+        return stringBuilder.append(" - <@${track.getUserData(RequestMetadata::class.java).owner}>").toString()
     }
 }

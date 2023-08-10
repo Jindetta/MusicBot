@@ -54,23 +54,23 @@ class PlayNextCmd(bot: Bot) : DJCommand(bot) {
             1,
             event.args.length - 1
         ) else if (event.args.isEmpty()) event.message.attachments[0].url else event.args
-        event.reply("$loadingEmoji Loading... `[$args]`") { m: Message? ->
+        event.reply("$loadingEmoji Loading... `[$args]`") { message ->
             bot.playerManager.loadItemOrdered(
                 event.guild,
                 args,
-                ResultHandler(m!!, event, false)
+                ResultHandler(message, event, false)
             )
         }
     }
 
     private inner class ResultHandler(
-        private val m: Message,
+        private val message: Message,
         private val event: CommandEvent,
-        private val ytsearch: Boolean
+        private val useYouTubeSearch: Boolean
     ) : AudioLoadResultHandler {
         private fun loadSingle(track: AudioTrack) {
             if (bot.config.isTooLong(track)) {
-                m.editMessage(
+                message.editMessage(
                     "${event.client.warning} This track (**${track.info.title}**) is longer than the allowed maximum: `${
                         FormatUtil.formatTime(
                             track.duration
@@ -83,7 +83,7 @@ class PlayNextCmd(bot: Bot) : DJCommand(bot) {
             val pos = handler.addTrackToFront(QueuedTrack(track, event.author)) + 1
             val addMsg =
                 ("${event.client.success} Added **${track.info.title}** (`${FormatUtil.formatTime(track.duration)}`) " + if (pos == 0) "to begin playing" else " to the queue at position $pos").filter()
-            m.editMessage(addMsg).queue()
+            message.editMessage(addMsg).queue()
         }
 
         override fun trackLoaded(track: AudioTrack) {
@@ -97,17 +97,23 @@ class PlayNextCmd(bot: Bot) : DJCommand(bot) {
         }
 
         override fun noMatches() {
-            if (ytsearch) m.editMessage((event.client.warning + " No results found for `" + event.args + "`.").filter())
-                .queue() else bot.playerManager.loadItemOrdered(
-                event.guild,
-                "ytsearch:" + event.args,
-                ResultHandler(m, event, true)
-            )
+            if (useYouTubeSearch) {
+                message.editMessage(("${event.client.warning} No results found for `${event.args}`.").filter()).queue()
+            } else {
+                bot.playerManager.loadItemOrdered(
+                    event.guild,
+                    "ytsearch:" + event.args,
+                    ResultHandler(message, event, true)
+                )
+            }
         }
 
         override fun loadFailed(throwable: FriendlyException) {
-            if (throwable.severity == FriendlyException.Severity.COMMON) m.editMessage(event.client.error + " Error loading: " + throwable.message)
-                .queue() else m.editMessage(event.client.error + " Error loading track.").queue()
+            if (throwable.severity == FriendlyException.Severity.COMMON) {
+                message.editMessage("${event.client.error} Error loading: ${throwable.message}").queue()
+            } else {
+                message.editMessage("${event.client.error} Error loading track.").queue()
+            }
         }
     }
 }

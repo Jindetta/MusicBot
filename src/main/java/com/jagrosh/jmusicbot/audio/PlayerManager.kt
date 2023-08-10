@@ -28,11 +28,17 @@ import net.dv8tion.jda.api.entities.Guild
 class PlayerManager(val bot: Bot) : DefaultAudioPlayerManager() {
 
     fun init() {
-        TransformativeAudioSourceManager.createTransforms(bot.config.transforms!!)
-            .forEach { t: TransformativeAudioSourceManager -> registerSourceManager(t) }
-        AudioSourceManagers.registerRemoteSources(this)
-        AudioSourceManagers.registerLocalSource(this)
-        source(YoutubeAudioSourceManager::class.java).setPlaylistPageCount(10)
+        val transforms = bot.config.transforms
+
+        if (transforms != null) {
+            TransformativeAudioSourceManager.createTransforms(transforms).forEach { transformativeAudioSourceManager ->
+                registerSourceManager(transformativeAudioSourceManager)
+            }
+
+            AudioSourceManagers.registerRemoteSources(this)
+            AudioSourceManagers.registerLocalSource(this)
+            source(YoutubeAudioSourceManager::class.java).setPlaylistPageCount(10)
+        }
     }
 
     fun hasHandler(guild: Guild): Boolean {
@@ -41,13 +47,18 @@ class PlayerManager(val bot: Bot) : DefaultAudioPlayerManager() {
 
     fun setUpHandler(guild: Guild): AudioHandler? {
         val handler: AudioHandler?
-        if (guild.audioManager.sendingHandler == null) {
+
+        if (hasHandler(guild)) {
+            handler = guild.audioManager.sendingHandler as? AudioHandler
+        } else {
             val player = createPlayer()
+
             player.volume = bot.settingsManager.getSettings(guild).volume
             handler = AudioHandler(this, guild, player)
             player.addListener(handler)
             guild.audioManager.sendingHandler = handler
-        } else handler = guild.audioManager.sendingHandler as AudioHandler?
+        }
+
         return handler
     }
 }

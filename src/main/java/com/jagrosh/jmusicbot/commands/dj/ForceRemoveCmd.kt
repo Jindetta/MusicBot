@@ -83,11 +83,13 @@ class ForceRemoveCmd(bot: Bot) : DJCommand(bot) {
     }
 
     private fun removeAllEntries(target: User, event: CommandEvent) {
-        val count = (event.audioHandler()).queue.removeAll(target.idLong)
-        if (count == 0) {
-            event.replyWarning("**" + target.name + "** doesn't have any songs in the queue!")
+        val handler = event.audioHandler()
+        val removedEntries = handler.queue.removeAll(target.idLong)
+
+        if (removedEntries == 0) {
+            event.replyWarning("**${target.name}** doesn't have any songs in the queue!")
         } else {
-            event.replySuccess("Successfully removed `" + count + "` entries from **" + target.name + "**#" + target.discriminator + ".")
+            event.replySuccess("Successfully removed `$removedEntries` entries from **${target.name}**#${target.discriminator}.")
         }
     }
 }

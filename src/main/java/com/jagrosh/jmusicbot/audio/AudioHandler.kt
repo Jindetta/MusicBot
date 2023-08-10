@@ -80,9 +80,8 @@ class AudioHandler(private val manager: PlayerManager, guild: Guild, val player:
 
     val requestMetadata: RequestMetadata
         get() {
-            if (player.playingTrack == null) return RequestMetadata.EMPTY
-            val rm = player.playingTrack.getUserData(RequestMetadata::class.java)
-            return rm ?: RequestMetadata.EMPTY
+            val metaData = player.playingTrack?.getUserData(RequestMetadata::class.java)
+            return metaData ?: RequestMetadata(null)
         }
 
     fun playFromDefault(): Boolean {
@@ -144,7 +143,7 @@ class AudioHandler(private val manager: PlayerManager, guild: Guild, val player:
             if (rm.owner != 0L) {
                 val u = guild.jda.getUserById(rm.user!!.id)
                 if (u == null) eb.setAuthor(
-                    rm.user.username + "#" + rm.user.discrim,
+                    rm.user.username + "#" + rm.user.discriminator,
                     null,
                     rm.user.avatar
                 ) else eb.setAuthor(u.name + "#" + u.discriminator, null, u.effectiveAvatarUrl)

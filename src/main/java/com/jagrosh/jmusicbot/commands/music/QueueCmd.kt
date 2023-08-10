@@ -26,8 +26,6 @@ import com.jagrosh.jmusicbot.settings.Settings
 import com.jagrosh.jmusicbot.utils.FormatUtil
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.exceptions.PermissionException
 import java.util.concurrent.TimeUnit
 
 /**
@@ -42,14 +40,14 @@ class QueueCmd(bot: Bot) : MusicCommand(bot) {
         help = "shows the current queue"
         arguments = "[pagenum]"
         aliases = bot.config.getAliases(name)
-        bePlaying = true
         botPermissions = arrayOf(Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EMBED_LINKS)
+        bePlaying = true
+
         builder = Paginator.Builder()
             .setColumns(1)
-            .setFinalAction { m: Message ->
-                try {
-                    m.clearReactions().queue()
-                } catch (ignore: PermissionException) {
+            .setFinalAction { message ->
+                runCatching {
+                    message.clearReactions().queue()
                 }
             }
             .setItemsPerPage(10)
@@ -62,63 +60,67 @@ class QueueCmd(bot: Bot) : MusicCommand(bot) {
     }
 
     override fun runCommand(event: CommandEvent) {
-        var pagenum = 1
-        try {
-            pagenum = event.args.toInt()
-        } catch (ignore: NumberFormatException) {
+        val pageNumber = event.args.toIntOrNull() ?: 1
+
+        val handler = event.audioHandler()
+        val list = handler.queue.list
+
+        if (list.isEmpty()) {
+            val nowPlaying = handler.getNowPlaying(event.jda)
+            val noNowPlaying = handler.getNoMusicPlaying(event.jda)
+
+            val built = MessageBuilder()
+                .setContent(event.client.warning + " There is no music in the queue!")
+                .setEmbeds((nowPlaying ?: noNowPlaying).embeds[0]).build()
+
+            event.reply(built) { message -> if (nowPlaying != null) bot.nowPlayingHandler.setLastNPMessage(message) }
+            return
         }
-        val ah = event.audioHandler()
-        if (ah != null) {
-            val list = ah.queue.getList()
-            if (list.isEmpty()) {
-                val nowp = ah.getNowPlaying(event.jda)
-                val nonowp = ah.getNoMusicPlaying(event.jda)
-                val built = MessageBuilder()
-                    .setContent(event.client.warning + " There is no music in the queue!")
-                    .setEmbeds((nowp ?: nonowp).embeds[0]).build()
-                event.reply(built) { m: Message -> if (nowp != null) bot.nowPlayingHandler.setLastNPMessage(m) }
-                return
-            }
-            val songs = arrayOfNulls<String>(list.size)
-            var total: Long = 0
-            for (i in list.indices) {
-                total += list[i].track.duration
-                songs[i] = list[i].toString()
-            }
-            val settings = event.client.getSettingsFor<Settings>(event.guild)
-            val fintotal = total
-            builder.setText { i1: Int?, i2: Int? ->
-                getQueueTitle(
-                    ah,
-                    event.client.success,
-                    songs.size,
-                    fintotal,
-                    settings.repeatMode
-                )
-            }
-                .setItems(*songs)
-                .setUsers(event.author)
-                .setColor(event.selfMember.color)
-            builder.build().paginate(event.channel, pagenum)
+
+        val songs = arrayOfNulls<String>(list.size)
+        var total: Long = 0
+
+        for (i in list.indices) {
+            total += list[i].track.duration
+            songs[i] = list[i].toString()
         }
+
+        val settings = event.client.getSettingsFor<Settings>(event.guild)
+        val fintotal = total
+        builder.setText { i1: Int?, i2: Int? ->
+            getQueueTitle(
+                handler,
+                event.client.success,
+                songs.size,
+                fintotal,
+                settings.repeatMode
+            )
+        }
+            .setItems(*songs)
+            .setUsers(event.author)
+            .setColor(event.selfMember.color)
+
+        builder.build().paginate(event.channel, pageNumber)
     }
 
     private fun getQueueTitle(
-        ah: AudioHandler?,
+        audioHandler: AudioHandler?,
         success: String,
-        songslength: Int,
+        songLength: Int,
         total: Long,
-        repeatmode: RepeatMode
+        repeatMode: RepeatMode
     ): String {
-        val sb = StringBuilder()
-        if (ah?.player?.playingTrack != null) {
-            sb.append(ah.statusEmoji).append(" **")
-                .append(ah.player.playingTrack.info.title).append("**\n")
+        val stringBuilder = StringBuilder()
+
+        if (audioHandler?.player?.playingTrack != null) {
+            stringBuilder.append(audioHandler.statusEmoji).append(" **")
+                .append(audioHandler.player.playingTrack.info.title).append("**\n")
         }
+
         return FormatUtil.filter(
-            sb.append(success).append(" Current Queue | ").append(songslength)
+            stringBuilder.append(success).append(" Current Queue | ").append(songLength)
                 .append(" entries | `").append(FormatUtil.formatTime(total)).append("` ")
-                .append(if (repeatmode.emoji != null) "| " + repeatmode.emoji else "").toString()
+                .append(if (repeatMode.emoji != null) "| " + repeatMode.emoji else "").toString()
         )
     }
 }

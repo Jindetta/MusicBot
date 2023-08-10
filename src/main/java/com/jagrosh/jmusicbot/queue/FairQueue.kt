@@ -21,59 +21,59 @@ package com.jagrosh.jmusicbot.queue
  * @param <T>
 </T> */
 class FairQueue<T : Queueable> {
-    private val list: MutableList<T> = ArrayList()
+    val list: MutableList<T> = ArrayList()
     private val set: MutableSet<Long> = HashSet()
 
     fun add(item: T): Int {
-        var lastIndex: Int = list.lastIndex
+        var lastIndex: Int = this.list.lastIndex
         while (lastIndex > -1) {
-            if (list[lastIndex].identifier == item.identifier) break
+            if (this.list[lastIndex].identifier == item.identifier) break
             lastIndex--
         }
         lastIndex++
         set.clear()
-        while (lastIndex < list.size) {
-            if (set.contains(list[lastIndex].identifier)) break
-            set.add(list[lastIndex].identifier)
+        while (lastIndex < this.list.size) {
+            if (set.contains(this.list[lastIndex].identifier)) break
+            set.add(this.list[lastIndex].identifier)
             lastIndex++
         }
-        list.add(lastIndex, item)
+        this.list.add(lastIndex, item)
         return lastIndex
     }
 
     fun addAt(index: Int, item: T) {
-        if (index >= list.size) {
-            list.add(item)
+        if (index >= this.list.size) {
+            this.list.add(item)
         } else {
-            list.add(index, item)
+            this.list.add(index, item)
         }
     }
 
     fun size(): Int {
-        return list.size
+        return this.list.size
     }
 
     fun pull(): T {
-        return list.removeFirst()
+        return this.list.removeFirst()
     }
 
     val isEmpty: Boolean
-        get() = list.isEmpty()
+        get() = this.list.isEmpty()
 
     operator fun get(index: Int): T {
-        return list[index]
+        return this.list[index]
     }
 
     fun remove(index: Int): T {
-        return list.removeAt(index)
+        return this.list.removeAt(index)
     }
 
     fun removeAll(identifier: Long): Int {
         var count = 0
 
-        for (item in list.reversed()) {
+        for (item in this.list.reversed()) {
             if (item.identifier == identifier) {
-                list.remove(item)
+                this.list.remove(item)
                 count++
             }
         }
@@ -82,11 +82,11 @@ class FairQueue<T : Queueable> {
     }
 
     fun clear() {
-        list.clear()
+        this.list.clear()
     }
 
     fun shuffle(identifier: Long): Int {
-        val modifiedList = list.filter { track -> track.identifier == identifier }
+        val modifiedList = this.list.filter { track -> track.identifier == identifier }
 
         /*for (index in modifiedList.indices) {
             val first = modifiedList[index]
@@ -96,13 +96,13 @@ class FairQueue<T : Queueable> {
             list[second] = temp
         }*/
 
-        list.shuffle()
+        this.list.shuffle()
 
-        return list.size
+        return this.list.size
     }
 
     fun skip(number: Int) {
-        list.removeAll(list.take(number).toSet())
+        this.list.removeAll(this.list.take(number).toSet())
     }
 
     /**
@@ -112,9 +112,9 @@ class FairQueue<T : Queueable> {
      * @return the moved item
      */
     fun moveItem(from: Int, to: Int): T {
-        val item = list.removeAt(from)
+        val item = this.list.removeAt(from)
 
-        list.add(to, item)
+        this.list.add(to, item)
         return item
     }
 }

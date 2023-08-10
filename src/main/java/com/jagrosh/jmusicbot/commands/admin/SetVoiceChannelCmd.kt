@@ -39,16 +39,16 @@ class SetVoiceChannelCmd(bot: Bot) : AdminCommand() {
             event.reply(event.client.error + " Please include a voice channel or NONE")
             return
         }
-        val s = event.client.getSettingsFor<Settings>(event.guild)
+        val settings = event.client.getSettingsFor<Settings>(event.guild)
         if (event.args.equals("none", ignoreCase = true)) {
-            s.setVoiceChannel(null)
+            settings.setVoiceChannel(null)
             event.reply(event.client.success + " Music can now be played in any channel")
         } else {
             val list = FinderUtil.findVoiceChannels(event.args, event.guild)
             if (list.isEmpty()) event.reply(event.client.warning + " No Voice Channels found matching \"" + event.args + "\"") else if (list.size > 1) event.reply(
                 event.client.warning + FormatUtil.listVoiceChannels(list, event.args)
             ) else {
-                s.setVoiceChannel(list[0])
+                settings.setVoiceChannel(list[0])
                 event.reply(event.client.success + " Music can now only be played in " + list[0].asMention)
             }
         }

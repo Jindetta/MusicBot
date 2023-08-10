@@ -37,13 +37,14 @@ class PrefixCmd(bot: Bot) : AdminCommand() {
             event.replyError("Please include a prefix or NONE")
             return
         }
-        val s = event.client.getSettingsFor<Settings>(event.guild)
+
+        val settings = event.client.getSettingsFor<Settings>(event.guild)
         if (event.args.equals("none", ignoreCase = true)) {
-            s.prefix = null
+            settings.prefix = null
             event.replySuccess("Prefix cleared.")
         } else {
-            s.prefix = event.args
-            event.replySuccess("Custom prefix set to `" + event.args + "` on *" + event.guild.name + "*")
+            settings.prefix = event.args
+            event.replySuccess("Custom prefix set to `${event.args}` on *${event.guild.name}*")
         }
     }
 }

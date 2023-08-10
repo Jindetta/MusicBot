@@ -24,7 +24,7 @@ import com.jagrosh.jmusicbot.commands.DJCommand
  *
  * @author John Grosh <john.a.grosh></john.a.grosh>@gmail.com>
  */
-class SkiptoCmd(bot: Bot) : DJCommand(bot) {
+class SkipToCmd(bot: Bot) : DJCommand(bot) {
     init {
         name = "skipto"
         help = "skips to the specified song"
@@ -37,14 +37,13 @@ class SkiptoCmd(bot: Bot) : DJCommand(bot) {
         val index = event.args.toIntOrNull()
 
         if (index == null) {
-            event.reply(event.client.error + " `" + event.args + "` is not a valid integer!")
+            event.reply("${event.client.error} `${event.args}` is not a valid integer!")
         } else {
             val handler = event.audioHandler()
 
             if (index < 1 || index > handler.queue.size()) {
                 event.reply(
-                    event.client.error + " Position must be a valid integer between 1 and " + handler.queue
-                        .size() + "!"
+                    "${event.client.error} Position must be a valid integer between 1 and ${handler.queue.size()}!"
                 )
                 return
             }

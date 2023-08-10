@@ -39,16 +39,16 @@ class SetTextChannelCmd(bot: Bot) : AdminCommand() {
             event.reply(event.client.error + " Please include a text channel or NONE")
             return
         }
-        val s = event.client.getSettingsFor<Settings>(event.guild)
+        val settings = event.client.getSettingsFor<Settings>(event.guild)
         if (event.args.equals("none", ignoreCase = true)) {
-            s.setTextChannel(null)
+            settings.setTextChannel(null)
             event.reply(event.client.success + " Music commands can now be used in any channel")
         } else {
             val list = FinderUtil.findTextChannels(event.args, event.guild)
             if (list.isEmpty()) event.reply(event.client.warning + " No Text Channels found matching \"" + event.args + "\"") else if (list.size > 1) event.reply(
                 event.client.warning + FormatUtil.listTextChannels(list, event.args)
             ) else {
-                s.setTextChannel(list[0])
+                settings.setTextChannel(list[0])
                 event.reply(event.client.success + " Music commands can now only be used in <#" + list[0].id + ">")
             }
         }

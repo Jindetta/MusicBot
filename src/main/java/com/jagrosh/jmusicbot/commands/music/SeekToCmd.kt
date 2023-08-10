@@ -13,6 +13,7 @@ import com.jagrosh.jmusicbot.timeToLong
 class SeekToCmd(bot: Bot) : MusicCommand(bot) {
     init {
         name = "seek"
+        arguments = "[hh:mm:ss]"
         help = "seeks to specified position"
         aliases = bot.config.getAliases(name)
         bePlaying = true
